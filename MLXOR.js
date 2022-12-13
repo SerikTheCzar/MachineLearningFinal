@@ -1,6 +1,7 @@
 const numeric = require('numeric');
 const math = require('mathjs');
 const { print } = require('mathjs');
+function ML(generations){
 function sigmoid(z) {
  //  console.log("this is z: " + z);
   //  console.log("This is the math function:" + (1/(1+Math.pow(Math.E, -z))))
@@ -159,14 +160,14 @@ function forwardProps(X,Y,parameters, funType) {
     cache.push(A2);
     cache.push(W2);
     cache.push(b2);
-    
+    /*
     console.log("This is Z1: " + Z1); //Z1 matches
     console.log("This is b1: " + b1); //b1 matches
     console.log("This is Z2: " + Z2); //Z2 match
     console.log("This is b2: " + b2); //b2 matches
     console.log("This is A1: " + A1); //A1 matches
     console.log("This is A2: " + A2); //A2 matches
-  
+  */
     //  console.log("this is cache: " + cache);
     //let log = numeric.add(numeric.mul(numeric.log(A2), Y), numeric.mul(numeric.log(numeric.sub(1, A2)), numeric.sub(1, Y)));
    // console.log("here lies the problem");
@@ -265,16 +266,18 @@ function backwardPropagation(X, Y, cache) {
     }
 
     //use frs instead of dZ2
-    console.log("this is dW2: " + dW2);
+   // console.log("this is dW2: " + dW2);
     //console.log("ffe dimensions: " + ffe.length + " " + ffe[0].length);
    // console.log("A1 transpose dimensions: " + numeric.transpose(A1).length + " " + numeric.transpose(A1)[0].length);
  //   console.log("this is djalen: " + dW2);
     //var dW2 = numeric.div(numeric.dot(dZ2, numeric.transpose(A1)), m);
    // console.log("it's 99");
     var db2 = sumDif(ffe);// numeric.div(numeric.sum(dZ2, 1), m);
+    /*
     console.log("this is dZ2: " + ffe);
     console.log("this is dW2: " + dW2);
-    console.log("this is db2: " + db2);
+    console.log("this is db2: " + db2); 
+    */
   //  console.log("it's 99");
    // console.log("this is W2 dimensions after transpose: " + numeric.transpose(W2).length + " " + numeric.transpose(W2)[0].length);
     //console.log("this is dZ2: " + dZ2);
@@ -293,12 +296,12 @@ function backwardPropagation(X, Y, cache) {
  //   console.log("it's 125");
  
     var db1 = numeric.div(numeric.sum(dZ1, 1), m);
-  
+  /*
     console.log("this is dA1: " + dA1);
     console.log("this is dZ1: " + dZ1);
     console.log("this is dW1: " + dW1);
     console.log("this is db1: " + db1);  
-
+*/
     var gradients = {"dZ2": dZ2, "dW2": dW2, "db2": db2, "dZ1": dZ1, "dW1": dW1, "db1": db1};
     return gradients;
 }
@@ -320,7 +323,7 @@ var inputFeatures = X.length;
 var outputFeatures = Y.length; // number of output features (1)
 var parameters = initParam(inputFeatures, neuronsInHiddenLayers, outputFeatures);
 //console.log("after parameters");
-var epoch = 100;
+var epoch = generations;
 var learningRate = 0.01;
 var losses = Array(epoch).fill(0);
 for (var i = 0; i < epoch; i++) {
@@ -338,7 +341,7 @@ for (var i = 0; i < epoch; i++) {
 }
 
 
-var X = [[1, 1, 0, 0], [0, 1, 0, 1]]; // XOR input
+var X = [[0, 0, 1, 1], [0, 1, 0, 1]]; // XOR input
 var result = forwardProps(X, Y, parameters);
 var cost = result[0];
 var A2 = result[2];
@@ -352,3 +355,18 @@ sysCheckList.push("Z1 is working");
 sysCheckList.push("Z2 is working");
 sysCheckList.push("B1 is working");
 console.log(prediction);
+return prediction;
+}
+
+const t0 = performance.now();
+let accuracy = ML(1000000);
+let initAccuracy = 0;
+let answerKey = [0, 1, 1, 0];
+for(let i=0;i<4; i++) {
+  if(accuracy[i] == answerKey[i]) {
+    initAccuracy++;
+  }
+}
+const t1 = performance.now();
+let percentScore = (initAccuracy/4)*100;
+console.log(`The machine learning algorithm took ${t1 - t0} milliseconds with an accuracy of ${percentScore}%.`);
